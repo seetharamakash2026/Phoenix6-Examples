@@ -50,9 +50,9 @@ public class Mechanisms {
      * features of our products in simulation using our examples out of the box. Users may modify to have a
      * display interface that they find more intuitive or visually appealing.
      */
-    public void update(StatusSignal<Angle> position, StatusSignal<AngularVelocity> velocity) {
-        VelocityMech.setLength(velocity.getValue().in(RotationsPerSecond)/120); // Divide by 120 to scale motion to fit in the window
-        arm.setAngle(position.getValue().in(Rotations) * 360);
+    public void update(StatusSignal<Angle> position, StatusSignal<AngularVelocity> velocity, StatusSignal<Angle> position2, StatusSignal<AngularVelocity> velocity2) {
+        VelocityMech.setLength((velocity.getValue().in(RotationsPerSecond) + velocity2.getValue().in(RotationsPerSecond))/(2 * 120)); // Divide by 120 to scale motion to fit in the window
+        arm.setAngle((position.getValue().in(Rotations) * 360 + position2.getValue().in(Rotations) * 360)/2);
         SmartDashboard.putData("mech2d", mech); // Creates mech2d in SmartDashboard
     }
 }

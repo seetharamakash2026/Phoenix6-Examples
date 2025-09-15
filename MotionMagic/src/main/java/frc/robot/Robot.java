@@ -26,9 +26,12 @@ import frc.robot.sim.PhysicsSim;
  * project.
  */
 public class Robot extends TimedRobot {
-  private final TalonFX m_fx = new TalonFX(1, "canivore");
+  private final TalonFX m_fx1 = new TalonFX(1, "canivore");
+  private final TalonFX m_fx2 = new TalonFX(2, "canivore");
   private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
   private final PS4Controller m_joystick = new PS4Controller(0);
+
+  private final double rotationAmount = 1.0/3; 
 
   private int m_printCount = 0;
 
@@ -36,7 +39,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationInit() {
-    PhysicsSim.getInstance().addTalonFX(m_fx, 0.001);
+    PhysicsSim.getInstance().addTalonFX(m_fx1, 0.001); // may need to be updated for the two pound weight and arm
+    PhysicsSim.getInstance().addTalonFX(m_fx2, 0.001);
   }
 
   @Override
@@ -72,7 +76,11 @@ public class Robot extends TimedRobot {
 
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      status = m_fx.getConfigurator().apply(cfg);
+      status = m_fx1.getConfigurator().apply(cfg);
+      if (status.isOK()) break;
+    }
+    for (int i = 0; i < 5; ++i) {
+      status = m_fx2.getConfigurator().apply(cfg);
       if (status.isOK()) break;
     }
     if (!status.isOK()) {
@@ -84,11 +92,14 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     if (++m_printCount >= 10) {
       m_printCount = 0;
-      System.out.println("Pos: " + m_fx.getPosition());
-      System.out.println("Vel: " + m_fx.getVelocity());
+      System.out.println("Pos1: " + m_fx1.getPosition());
+      System.out.println("Vel1: " + m_fx1.getVelocity());
+      System.out.println();
+      System.out.println("Pos2: " + m_fx2.getPosition());
+      System.out.println("Vel2: " + m_fx2.getVelocity());
       System.out.println();
     }
-    m_mechanisms.update(m_fx.getPosition(), m_fx.getVelocity());
+    m_mechanisms.update(m_fx1.getPosition(), m_fx1.getVelocity(), m_fx2.getPosition(), m_fx2.getVelocity());
   }
 
   @Override
@@ -106,9 +117,14 @@ public class Robot extends TimedRobot {
     double leftY = m_joystick.getLeftY();
     if (Math.abs(leftY) < 0.1) leftY = 0;
 
-    m_fx.setControl(m_mmReq.withPosition(leftY * 10).withSlot(0));
+    m_fx1.setControl(m_mmReq.withPosition(leftY * 10).withSlot(0));
     if (m_joystick.getCircleButton()) {
-      m_fx.setPosition(Rotations.of(1));
+      m_fx1.setPosition(Rotations.of(rotationAmount));
+    }
+
+    m_fx2.setControl(m_mmReq.withPosition(leftY * 10).withSlot(0));
+    if (m_joystick.getCircleButton()) {
+      m_fx2.setPosition(Rotations.of(rotationAmount));
     }
   }
 
