@@ -54,5 +54,6 @@ public class Mechanisms {
         VelocityMech.setLength((velocity.getValue().in(RotationsPerSecond) + velocity2.getValue().in(RotationsPerSecond))/(2 * 120)); // Divide by 120 to scale motion to fit in the window
         arm.setAngle((position.getValue().in(Rotations) * 360 + position2.getValue().in(Rotations) * 360)/2);
         SmartDashboard.putData("mech2d", mech); // Creates mech2d in SmartDashboard
+        SmartDashboard.putNumber("Output Rotations", (position.getValue().in(Rotations) + position2.getValue().in(Rotations))/(2 * 23));
     }
 }

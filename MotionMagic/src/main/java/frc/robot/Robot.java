@@ -31,7 +31,9 @@ public class Robot extends TimedRobot {
   private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
   private final PS4Controller m_joystick = new PS4Controller(0);
 
-  private final double rotationAmount = 1.0/3; 
+  private final double gearing = 23.6; // roughly
+  private final double rotationAmount = 0; 
+  private final double intendedOutput = 1.0/3;
 
   private int m_printCount = 0;
 
@@ -57,14 +59,14 @@ public class Robot extends TimedRobot {
 
     /* Configure gear ratio */
     FeedbackConfigs fdb = cfg.Feedback;
-    fdb.SensorToMechanismRatio = 12.8; // 12.8 rotor rotations per mechanism rotation
+    fdb.SensorToMechanismRatio = gearing; // 12.8 -> 23 rotor rotations per mechanism rotation
 
     /* Configure Motion Magic */
     MotionMagicConfigs mm = cfg.MotionMagic;
-    mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(25)) // 5 (mechanism) rotations per second cruise -> 25 rpm cruise
-      .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10)) // Take approximately 0.5 seconds to reach max vel 
-      // Take approximately 0.1 seconds to reach max accel 
-      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
+    mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(50)) // 5 (mechanism) rotations per second cruise -> 50 rpm cruise
+      .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(150)) // Take approximately 0.0333 seconds to reach max vel 
+      // Take approximately 0.01 seconds to reach max accel 
+      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(1000));
 
     Slot0Configs slot0 = cfg.Slot0;
     slot0.kS = 0.25; // Add 0.25 V output to overcome static friction
@@ -116,13 +118,19 @@ public class Robot extends TimedRobot {
     /* Deadband the joystick */
     double leftY = m_joystick.getLeftY();
     if (Math.abs(leftY) < 0.1) leftY = 0;
+    double targetRot = 0; 
+    if (leftY != 0) {
+      targetRot = (gearing * intendedOutput);
+    } 
 
-    m_fx1.setControl(m_mmReq.withPosition(leftY * 10).withSlot(0));
+    //m_fx1.setControl(m_mmReq.withPosition(leftY * 10).withSlot(0));
+    m_fx1.setControl(m_mmReq.withPosition(targetRot).withSlot(0));
     if (m_joystick.getCircleButton()) {
       m_fx1.setPosition(Rotations.of(rotationAmount));
     }
 
-    m_fx2.setControl(m_mmReq.withPosition(leftY * 10).withSlot(0));
+    //m_fx2.setControl(m_mmReq.withPosition(leftY * 10).withSlot(0));
+    m_fx2.setControl(m_mmReq.withPosition(targetRot).withSlot(0));
     if (m_joystick.getCircleButton()) {
       m_fx2.setPosition(Rotations.of(rotationAmount));
     }
