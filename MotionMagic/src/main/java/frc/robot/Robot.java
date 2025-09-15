@@ -16,6 +16,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PS4Controller;
 import frc.robot.sim.PhysicsSim;
 
 /**
@@ -27,7 +28,7 @@ import frc.robot.sim.PhysicsSim;
 public class Robot extends TimedRobot {
   private final TalonFX m_fx = new TalonFX(1, "canivore");
   private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
-  private final XboxController m_joystick = new XboxController(0);
+  private final PS4Controller m_joystick = new PS4Controller(0);
 
   private int m_printCount = 0;
 
@@ -56,8 +57,8 @@ public class Robot extends TimedRobot {
 
     /* Configure Motion Magic */
     MotionMagicConfigs mm = cfg.MotionMagic;
-    mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(5)) // 5 (mechanism) rotations per second cruise
-      .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10)) // Take approximately 0.5 seconds to reach max vel
+    mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(25)) // 5 (mechanism) rotations per second cruise -> 25 rpm cruise
+      .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10)) // Take approximately 0.5 seconds to reach max vel 
       // Take approximately 0.1 seconds to reach max accel 
       .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
 
@@ -106,7 +107,7 @@ public class Robot extends TimedRobot {
     if (Math.abs(leftY) < 0.1) leftY = 0;
 
     m_fx.setControl(m_mmReq.withPosition(leftY * 10).withSlot(0));
-    if (m_joystick.getBButton()) {
+    if (m_joystick.getCircleButton()) {
       m_fx.setPosition(Rotations.of(1));
     }
   }
