@@ -12,6 +12,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
+/*
+ * TODO
+ * tie the mechanism to a robot by following https://docs.advantagescope.org/tab-reference/3d-field/:
+ * define a Pose3d so it shows up on the field, 
+ * then publish that pose through the array and the normal struct publisher,
+ * then tie the mechanism to the robot somehow I haven't read that far yet
+ */
+
+
 /**
  * Class to keep all the mechanism-specific objects together and out of the main example
  */
